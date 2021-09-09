@@ -234,3 +234,161 @@ ApplicationContext ctx  = new AnnotationConfigApplicationContext();
 BeanFactory and ApplicationContext are interfaces to access Spring Factory
 
 ================
+* To resolve multiple beans implementing an interface
+1) use @Primary on one of the bean
+
+@Repository
+@Primary
+public class EmployeeDaoJpaImpl implements EmployeeDao {
+
+	@Override
+	public void addEmployee() {
+		System.out.println("added using JPA!!!");
+	}
+
+}
+
+package com.adobe.demo.dao;
+
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class EmployeeDaoMongoImpl implements EmployeeDao {
+
+	@Override
+	public void addEmployee() {
+		System.out.println("mongo store!!!");
+	}
+
+}
+
+----------
+
+2) using @Qualifier [ Remove @Primary]
+
+@Service
+public class SampleService {
+	@Autowired
+	@Qualifier("employeeDaoMongoImpl")
+	private EmployeeDao empDao;
+	
+	public void insertEmployee() {
+		empDao.addEmployee();
+	}
+}
+
+
+@Service
+public class OtherService {
+	@Autowired
+	@Qualifier("employeeDaoJdbcImpl")
+	private EmployeeDao empDao;
+	
+	public void insertEmployee() {
+		empDao.addEmployee();
+	}
+}
+
+===============
+3) using @Profile
+@Repository
+@Profile("dev")
+public class EmployeeDaoMongoImpl implements EmployeeDao {
+
+	@Override
+	public void addEmployee() {
+		System.out.println("mongo store!!!");
+	}
+
+}
+
+
+@Repository
+@Profile("prod")
+public class EmployeeDaoJpaImpl implements EmployeeDao {
+
+	@Override
+	public void addEmployee() {
+		System.out.println("added using JPA!!!");
+	}
+}
+
+
+3.1) 
+Program Arguments:
+--spring.profiles.active=dev
+
+3.2) 
+application.properties
+spring.profiles.active=prod
+
+Command Line arguments [program arguments] ==> system.properties => application.properties
+
+
+3.2)
+
+application.properties
+dao=mongo
+
+@Repository
+//@Profile("dev")
+@ConditionalOnProperty(name = "dao", havingValue = "mongo")
+public class EmployeeDaoMongoImpl implements EmployeeDao {
+
+	@Override
+	public void addEmployee() {
+		System.out.println("mongo store!!!");
+	}
+
+}
+
+=================
+
+@ConditionalOnMissingBean("employeeDaoMongoImpl")
+
+===========================================================
+
+* Spring creates instances using default constructor
+
+Fails to create the instance of below class:
+@Component
+public class Example {
+	public Example(String name) {
+
+	}
+}
+
+
+* We need Spring container to manage bean of classes which are programatically created using "new" keyword
+==> 3rd party apis which doesn't have @component, @Repository, ..
+
+@Configuration
+public class MyConfig {
+
+@Bean(name="c3p0")
+public DataSource getDataSource() {
+	ComboPooledDataSource cpds = new ComboPooledDataSource();
+	cpds.setDriverClass( "org.postgresql.Driver" ); //loads the jdbc driver            
+	cpds.setJdbcUrl( "jdbc:postgresql://localhost/testdb" );
+	cpds.setUser("swaldman");                                  
+	cpds.setPassword("test-password");                                  
+	cpds.setMinPoolSize(5);                                     
+	cpds.setAcquireIncrement(5);
+	cpds.setMaxPoolSize(20);
+	return cpds;
+}
+
+}
+
+@Service
+class SampleService {
+	@Autowired
+	DataSource ds;
+}
+
+ReloadableResourceBundleMessageSource 
+
+=============
+
+

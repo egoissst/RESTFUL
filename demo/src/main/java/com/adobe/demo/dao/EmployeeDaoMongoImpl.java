@@ -5,13 +5,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 @Repository
-//@Profile("prod")
-@ConditionalOnProperty(name = "dao", havingValue = "jpa")
-public class EmployeeDaoJpaImpl implements EmployeeDao {
+//@Profile("dev")
+@ConditionalOnProperty(name = "dao", havingValue = "mongo")
+public class EmployeeDaoMongoImpl implements EmployeeDao {
 
 	@Override
 	public void addEmployee() {
-		System.out.println("added using JPA!!!");
+		System.out.println("mongo store!!!");
 	}
 
 }
+

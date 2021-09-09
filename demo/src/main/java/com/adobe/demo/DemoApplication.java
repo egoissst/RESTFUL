@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.adobe.demo.service.SampleService;
 
-@SpringBootApplication
+@SpringBootApplication()
 public class DemoApplication {
 
 	public static void main(String[] args) {
@@ -15,6 +15,11 @@ public class DemoApplication {
 		SampleService service = ctx.getBean("sampleService", SampleService.class);
 		
 		service.insertEmployee();
+		service.sendEmail("Hello World!!!");
+//		String[] names = ctx.getBeanDefinitionNames();
+//		for(String name: names) {
+//			System.out.println(name);
+//		}
 	}
 
 }
