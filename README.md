@@ -50,5 +50,127 @@ bash terminal> mysql -u "root" -p
 
 mysql> exit
 
-===============
+=======================================
 
+SOLID Design Principles
+
+D ==> Dependency Injection ==> Inversion Of Control
+
+Container ==> Layer on top of JVM with service providers
+
+Web Container / Servlet engine ==> DI only for web related ==> request and response, servletcontext
+EJB Container ==> SessionBean, EntityBean, MessageBean
+
+Spring Container ==> Lifecycle of bean and wiring
+	lightweight container for building enterprise application ==> provides DI as core module
+	Any object managed by spring container is termed as "bean"
+
+Guice
+Play Framework
+
+============
+
+	Spring Container:
+	Metadata ==> XML
+
+	interface EmployeeDao {
+		void addEmployee(Employee e);
+	}
+
+	public class EmployeeDaoJdbcImpl implements EmployeeDao {
+			public void addEmployee(Employee e) {//}
+	}
+
+	public class SampleService {
+		private EmployeeDao empDao;
+
+		public void setEmployeeDao(EmployeeDao ed) { this.empDao = ed; }
+
+		public void insert(Employee e) {
+			empDao.addEmployee(e);
+		}
+	}
+
+	beans.xml
+
+	<beans>
+    <bean id="jdbcimpl" class ="pkg.EmployeeDaoJdbcImpl" />
+    <bean id="service" class ="pkg.SampleService">
+      <property name="employeeDao" ref="jdbcimpl" />
+   	</bean>
+ 	</beans>
+
+ 	new ClassPathXmlApplicationContext("beans.xml");
+ 	OR
+	new FilePathXmlApplicationContext("/users/data/a.xml")
+
+===================================================
+
+Spring Annotations at class level:
+
+1) @Component
+==> Utility classes / helpers 
+2) @Repository
+==> DAO
+https://github.com/spring-projects/spring-framework/blob/main/spring-jdbc/src/main/resources/org/springframework/jdbc/support/sql-error-codes.xml
+3) @Service
+4) @Controller
+5) @RestController
+6) @Configuration
+
+============
+
+
+	interface EmployeeDao {
+		void addEmployee(Employee e);
+	}
+
+	@Repository
+	public class EmployeeDaoJdbcImpl implements EmployeeDao {
+			public void addEmployee(Employee e) {//}
+	}
+
+	@Service
+	public class SampleService {
+		@Autowired
+		private EmployeeDao empDao;
+ 
+ 		public void insert(Employee e) {
+			empDao.addEmployee(e);
+		}
+	}
+
+Spring containers creates
+*  "employeeDaoJdbcImpl" instance of "EmployeeDaoJdbcImpl"
+* "sampleService" instance of "SampleService"
+
+@Service("myservice")
+
+========
+
+@Autowired
+private EmployeeDao empDao;
+OR
+@Inject
+private EmployeeDao empDao;
+
+@Autowired uses internally libraries like [ CGLib / JavaAssist / ByteBuddy] for bytecode instrumentation
+EmployeeDao empDao = serviceProvider.getInstance(EmployeeDao.class);
+OR
+EmployeeDao empDao = new EmployeeDaoJdbcImpl();
+
+
+
+try {
+	...
+} catch(SQLException ex) {
+	ex.getErrorCode()
+}
+
+=============
+
+Eclipse ==> Help ==> Eclipse Market Place ==> Search for "STS" ==> Install Spring tools 4.x.x
+
+======================================
+
+	
