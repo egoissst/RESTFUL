@@ -169,8 +169,68 @@ try {
 
 =============
 
-Eclipse ==> Help ==> Eclipse Market Place ==> Search for "STS" ==> Install Spring tools 4.x.x
+Eclipse ==> Help ==> Eclipse Market Place ==> Search for "STS" ==> Install Spring tools 4 
 
-======================================
+=========================================
 
-	
+
+Spring Boot?
+Spring framework with some pre-configuration done
+==> highly Opiniated Framework
+* for Database related ==> configures HikariCP as database connection pool [ C3p0/ DriverManagerDataSource]
+* Tomcat as embedded Servlet Container for web application
+* Hibernate as ORM framework
+
+==> makes application container ready [ Docker]
+https://spring.io/guides/gs/spring-boot-docker/
+
+Dockerfile
+
+FROM openjdk:8-jdk-alpine
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+
+Without spring boot:
+
+FROM openjdk:8-jdk-alpine
+FROM tomcat:tomcat-9
+FROM maven:..
+
+mvn clean intall
+mvn tomcat:run
+
+=====================
+
+This line creates spring container:
+SpringApplication.run(DemoApplication.class, args);
+
+in Spring framework
+
+ApplicationContext ctx  = new ClassPathXmlApplicationContext("beans.xml");
+OR
+ApplicationContext ctx  = new AnnotationConfigApplicationContext();
+
+* SpringApplication.run(DemoApplication.class, args); uses @SpringBootApplication
+
+@SpringBootApplication is 3 in one:
+1) @ComponentScan
+	scans for spring components having any of the above "6" mentioned annotations from "com.adobe.demo" and
+	sub-packages [com.adobe.demo.service] and creates bean
+
+	==> @ComponentScan(basePackages="{....}")
+2) @EnableAutoConfiguration
+	==> spring boot is highly opiniated and creates many things out of box [ Connection Pool / Tomcat/ ORM / 3rd party
+	Jackson] if these are present in the for "jar" libraries 
+
+	@EnableAutoConfiguration(exclude={HibernateJPAVendor.class})
+	@EnableAutoConfiguration(excludeName={"nameOfBean"})
+
+3) @Configuration class
+
+=============================
+
+BeanFactory and ApplicationContext are interfaces to access Spring Factory
+
+================
