@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.adobe.prj.dao.ProductDao;
@@ -29,5 +32,15 @@ public class OrderService {
 	
 	public Product saveProduct(Product p) {
 		return productDao.save(p);
+	}
+	
+	public List<Product> getProductsByRange(double low, double high) {
+		return productDao.getProductsByRange(low, high);
+	}
+	
+	// pagination
+	public Page<Product> getByPage(int page , int size) {
+		Pageable pageable = PageRequest.of(page, size);
+		return productDao.findAll(pageable);
 	}
 }

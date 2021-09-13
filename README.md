@@ -491,3 +491,64 @@ Build New Spring boot application with "MySQL", "jpa" and "web" dependencies
 
 =============
 
+@Embeddable
+public class UserPK implements Serializable {
+	private String firstName;
+	private String lastName;
+	private String middleName;
+	//
+}
+
+
+@Table(name="users")
+@Entity
+public class User {
+	@EmbeddedId
+	private UserPK userPK;
+	..
+}
+
+==============
+
+* spring.jpa.hibernate.ddl-auto=update
+
+	==> DDL ==> Data Definition Language ==> CReaTE, ALTER and DROP
+	update ==> map to existing table if table exist; else create table; if required alter table to match mapping
+	TOP to BottOM approach
+	create ==> drop and create tables for every application run ==> good for testing
+	verify ==> map to existing tables; no alter on tables; if mapping fails ==> application fails
+		Bottom to TOP approach
+
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+* em.save() or em.findById(4); ==> check if appropriate SQL is generated
+
+
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+* Generate SQL for MySQL8
+
+
+==
+
+
+docker exec -it local-mysql bash
+
+ # mysql -u "root" -p
+Enter password:Welcome123
+
+use ADOBE_JPA
+
+ select * from products;
+
+insert into products  (id, name, price, category, quantity) values (0, 'Samsung Z fold', 130000.00 , 'mobile', 100);
+insert into products  (id, name, price, category, quantity) values (0, 'Sony Bravia', 95000.00 , 'tv',100);
+insert into products  (id, name, price, category, quantity) values (0, 'Onida Thunder', 3500.00 , 'tv', 100);
+insert into products  (id, name, price, category, quantity) values (0, 'Logitech Mouse', 600.00 , 'computer', 100);
+insert into products  (id, name, price, category, quantity) values (0, 'Lamp', 900.00 , 'electrical', 100);
+
+
+===============
+
+@Query(value= "select * from products where price >= :low and price <= :high", nativeQuery=true)
