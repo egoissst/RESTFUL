@@ -552,3 +552,157 @@ insert into products  (id, name, price, category, quantity) values (0, 'Lamp', 9
 ===============
 
 @Query(value= "select * from products where price >= :low and price <= :high", nativeQuery=true)
+
+=======================================
+
+REST ==> Representational State Transfer
+* Resource on server [ database / noSQL/ files / printer]
+* state of the resource is served to clients in various representation [ XML / JSON / CSV / ATOM ]
+
+Characterstics of REST
+1) client - server logic seperation
+2) Stateless [ Server should not have client session details ==> No Cookies / HttpSession concepts]
+3) Cacheable [ client side [ Cache-Control, Expires, ETag] or middle tier [Redis]]
+4) Uniform Resource
+
+Resource URI should be plural nouns and actions are done using HTTP verbs
+
+Resource: http://server/api/v1/products
+
+* 1)
+GET:
+http://server/api/v1/products
+
+get all products representation based on "accept" HTTP header
+
+2) 
+
+GET:
+http://server/api/v1/products/5
+
+extra path param is to identify based on PK or sub-resources
+
+--> get product represetntation of product whose id is 5
+
+http://server/api/v1/customers/banu@gmail.com/orders
+
+3)
+
+http://server/api/v1/products?page=3&size=10
+http://server/api/v1/products?lower=1000&higher=10000
+
+Query param for filtered response
+
+============
+
+4) 
+POST
+http://server/api/v1/products
+
+"content-type" header is used to specify what type of representation is sent to server
+
+===
+
+5) 
+DELETE
+http://server/api/v1/products/5
+
+6)
+PUT
+http://server/api/v1/products/5
+
+"content-type" header is used to specify what type of representation is sent to server which needs to be used
+to modify product whose id is "5"
+
+7) PATCH
+http://server/api/v1/products/5
+
+for partial update of product
+
+8) JSON-PATCH+PATCH
+"content-type" : "application/json-patch+patch"
+http://server/api/v1/products/5
+
+payload:
+
+{
+	"op" : "replace",
+	"path" "/price",
+	"value" : 5555.22
+}
+
+==
+
+ op can be "add", "replace", "remove"
+
+
+=========================
+
+GET and DELETE can't have payload ==> IDEMPOTENT
+
+POST, PUT, PATCH can have payload ==> NOT IDEMPOTENT
+
+===============================================
+
+
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+
+	@GetMapping()
+	m1() {
+
+	}
+
+	@PostMapping()
+	m2() {
+
+	}
+}
+
+
+==
+
+@RestController
+@RequestMapping("/api/customers)
+public class ProductController {
+
+	@GetMapping()
+	m1() {
+
+	}
+
+	@PostMapping()
+	m2() {
+
+	}
+}
+
+
+@PostMapping()
+@ResponseStatus(HttpStatus.CREATED)
+	public  @ResponseBody Product addProduct(@RequestBody Product p) {
+		Product prd = service.saveProduct(p);
+		return prd;
+	}
+		
+=========
+
+Browser:
+GET
+http://localhost:8080/api/products
+GET using path param @PathVariable
+http://localhost:8080/api/products/4
+GET by Query param @RequestParam
+http://localhost:8080/api/products?low=1000&high=100000
+
+
+
+=========
+Download POSTMAN
+
+POSTMAN for POST, PUT and DELETE testing
+
+================================================
+
+
