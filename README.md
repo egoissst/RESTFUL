@@ -387,8 +387,107 @@ class SampleService {
 	DataSource ds;
 }
 
-ReloadableResourceBundleMessageSource 
-
 =============
 
+
+Day 2
+
+JPA using Spring Data JPA
+
+JPA ==> Java Persistence API => not a part of Spring ==> It's a specification to use ORM over RDBMS.
+
+ORM ==> Object Relational Mapping ==> Framework over JDBC to interact with RDBMS
+
+JDBC ==> integration API [ java ] ==> Impedence mismatch
+	Java ==> Employee and Address 
+*	single table
+	employee_id | first_name | street | city | zip ...
+
+* Share PK
+	employee table
+	employee_id | first_name 
+
+	address table
+	employee_id | street | city | zip
+
+* FK
+	employee table
+	employee_id | first_name 
+
+	address table
+	address_id | street | city | zip | employee_id
+
+=====================
+
+@Configuration
+public class MyConfiguration {
+
+	@Bean
+	public DataSource getDataSource() {
+		ComboPooledDataSource cpds = new ComboPooledDataSource();
+		cpds.setDriverClass( "org.postgresql.Driver" ); //loads the jdbc driver            
+		cpds.setJdbcUrl( "jdbc:postgresql://localhost/testdb" );
+		cpds.setUser("swaldman");                                  
+		cpds.setPassword("test-password");                                  
+	
+		cpds.setMinPoolSize(5);                                     
+		cpds.setAcquireIncrement(5);
+		cpds.setMaxPoolSize(20);
+		return cpds;
+	}
+
+	@Bean
+	public EntityManagerFactory getEmf(DataSource ds) {
+		LocalContainerEntityMaangerFactoryBean emf = new LocalContainerEntityMaangerFactoryBean();
+			emf.setJPAVendor(new HibernateJPAVendor());
+			<!-- emf.setDataSource(getDataSource()); -->
+			emf.setDataSource(ds);
+			emf.setPackagesToScan("com.adobe.prj.entity");
+			...
+		return emf;
+	}
+}
+
+
+public interface ProductDao {
+	void addProduct(Product p);
+	Product getProduct(int id);
+}
+
+@Repository
+public class ProductDaoJPAImpl implements ProductDao {
+	@PersitenceContext
+	private EntityManager em;
+
+	public void addProduct(Product p) {
+		em.save(p);
+	}
+
+	public Product getProduct(int id) {
+		return em.findById(id);
+	}
+}
+
+=========================
+
+Spring Data JPA simplifies using JPA
+
+* No need to write @Repository classes
+* just create interface extends JPARepository
+
+public interface ProductDao extends JPARepository<Product, Integer> {
+}
+
+* you get methods for save(), findById, findAll(), pagination , sorting, limit, delete
+* can add additional methods 
+* Spring uses Byte Code Instrumentation libraries to generate classes for these interface
+
+
+* JPARepository ==> PageAndSortingRepository ==> CrudRepository
+
+================
+
+Build New Spring boot application with "MySQL", "jpa" and "web" dependencies
+
+=============
 
