@@ -23,7 +23,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.adobe.prj.api.ProductController;
 import com.adobe.prj.entity.Product;
 import com.adobe.prj.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,7 +58,6 @@ public class ProductControllerTest {
 	@Test
 	public void addProductTest() throws Exception {
 		Product p = new Product(0, "b", 1500.00, "c1");
-//		Product p2 = new Product(1, "b", 1500.00, 100);
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(p); // get JSON for Product p
 
@@ -83,7 +81,8 @@ public class ProductControllerTest {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(p); // get JSON for Product p
 
-		mockMvc.perform(post("/api/products").content(json).contentType(MediaType.APPLICATION_JSON))
+		mockMvc.perform(post("/api/products")
+				.content(json).contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.errors", hasSize(2)))
 				.andExpect(jsonPath("$.errors", hasItem("Name is required")))
 				.andExpect(jsonPath("$.errors", hasItem("Price -1500.0 should be more than 10")));

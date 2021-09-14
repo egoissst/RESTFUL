@@ -25,7 +25,7 @@ public class RestfulexampleApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 //		addProduct();
-		getProducts();
+//		getProducts();
 	}
 
 	private void getProducts() {

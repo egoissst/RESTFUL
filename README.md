@@ -792,7 +792,79 @@ public void transferFunds(...){
 
 ======================================
 
+Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<com.adobe.prj.entity.Product> com.adobe.prj.api.ProductController.addProduct(com.adobe.prj.entity.Product) with 2 errors: 
+	[Field error in object 'product' on field 'name': rejected value []; 
+	codes [NotBlank.product.name,NotBlank.name,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [product.name,name]; arguments []; default message [name]]; default message [Name is required]] 
+
+	[Field error in object 'product' on field 'price': rejected value [-99.0]; codes [Min.product.price,Min.price,Min.double,Min]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [product.price,price]; arguments []; default message [price],10]; 
+
+	default message [Price -99.0 should be more than 10]] ]
 
 
+
+ProductController.java
+	@PostMapping()
+	public ResponseEntity<Product> addProduct(@RequestBody @Valid Product p) {
+		Product prd = service.saveProduct(p);
+		return new  ResponseEntity<>(prd, HttpStatus.CREATED);  // 201
+	}
+
+=====
+
+package com.adobe.prj.api;
+
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import com.adobe.prj.service.NotFoundException;
+
+@ControllerAdvice
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<Object> handleNotFoundException(NotFoundException ex) {
+		Map<String, Object> body = new LinkedHashMap<String, Object>();
+		body.put("message", ex.getMessage());
+		return new ResponseEntity<Object>(body, HttpStatus.BAD_REQUEST);
+	}
+	
+	@Override
+	public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		Map<String, Object> body = new LinkedHashMap<String, Object>();
+		
+		body.put("timestamp", LocalDate.now());
+		body.put("status", status.value());
+		
+		List<String> errors = ex.getBindingResult()
+					.getFieldErrors().stream()
+					.map(exception -> exception.getDefaultMessage())
+					.collect(Collectors.toList());
+		
+		body.put("errors", errors);
+		return new ResponseEntity<Object>(body, HttpStatus.BAD_REQUEST);
+	}
+}
+
+===========================================
+
+Unit Testing RestController
+Spring boot starter test includes:
+	==> JUnit as Unit testing framework / TestNG
+	==> Hamcrest ==> Assertion libraries
+	==> json-path ==> to validated JSON data
+	==> Mockito ==> Mock API
 
 

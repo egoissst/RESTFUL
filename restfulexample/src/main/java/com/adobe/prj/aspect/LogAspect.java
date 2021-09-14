@@ -3,11 +3,14 @@ package com.adobe.prj.aspect;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+
+import com.adobe.prj.service.NotFoundException;
 
 @Configuration
 @Aspect
@@ -29,4 +32,8 @@ public class LogAspect {
 		logger.info("*********************");
 	}
 	
+	@AfterThrowing(value="execution(* com.adobe.prj.**.*.*(..))", throwing = "NotFoundException")
+	public void logException(JoinPoint jp, NotFoundException ex) {
+		
+	}
 }

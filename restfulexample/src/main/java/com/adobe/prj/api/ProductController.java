@@ -1,5 +1,6 @@
 package com.adobe.prj.api;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -32,11 +33,12 @@ public class ProductController {
 	@GetMapping()
 	public @ResponseBody List<Product> getProducts(@RequestParam(name ="low", defaultValue = "0.0") double low, 
 			@RequestParam(name ="high", defaultValue = "0.0") double high) {
-		if(low == 0.0 && high == 0.0) {
-			return service.getProducts();
-		} else {
-			return service.getProductsByRange(low, high);
-		}
+//		if(low == 0.0 && high == 0.0) {
+////			return service.getProducts();
+			return Arrays.asList(new Product(1, "a", 500.00, "c1"), new Product(2, "b", 1500.00, "c2"));
+//		} else {
+//			return service.getProductsByRange(low, high);
+//		}
 	}
 	
 	// http://localhost:8080/api/products/5
@@ -52,5 +54,6 @@ public class ProductController {
 		Product prd = service.saveProduct(p);
 		return new  ResponseEntity<>(prd, HttpStatus.CREATED);  // 201
 	}
-			
+		
+	
 }
