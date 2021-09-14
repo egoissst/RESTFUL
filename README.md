@@ -706,3 +706,93 @@ POSTMAN for POST, PUT and DELETE testing
 ================================================
 
 
+Day 3
+
+RESTful Web services
+Pathparam and QueryParam
+@RestController
+@ResponseBody
+@RequestBody
+ResponseEntity
+Mapping HTTP methods
+
+JPA ==> JPARepository which comes with predifened methods for CRUD operations; we can add our own methods using @Query
+JPQL and SQL
+
+Tested  GET requests using Browser 
+POSTMAN
+
+=======================================================
+
+CustomerService
+	DAO methods
+AdminService
+	DAO methods
+
+=======================
+
+POST request:
+
+POSTMAN
+
+POST http://localhost:8080/api/products
+
+Headers:
+Accept: application/json
+Content-type: application/json
+
+Body: [raw]
+
+{
+    "name" : "LG AC",
+    "price" : 45000.00,
+    "category": "ELECTRICAL",
+    "quantity" : 500
+}
+
+====================================
+Core Container of Spring ==> DI
+Web module ==> Building traditional web applocaiton and RESTful Web services
+Spring Data JPA ==> integrate with ORM
+AOP ==> Spring Boot module
+
+Aspect Oriented Programming
+
+----------------------------
+Goal : eliminate code scattering and code tangling 
+
+What to eliminate? ==> Cross cutting concern ==> not a part of main logic but can be used along with main logic
+* logging
+* security
+* Transaction
+* Profile
+
+public void transferFunds(...){
+		security logic
+		logging
+		transaction
+		main1
+		main2
+		logging
+		main3
+		transaction
+}
+
+============
+
+* Aspect ==> Concern which can be used along with main logic [ Logging, Security,]
+	these aspects can be weaved / wiring into application
+
+* JoinPoint ==> a place where Aspect can be weaved [ any method or exception]
+		All methods and exception qualifies
+
+* PointCut ==> Selected JoinPoints
+
+* Advice ==> Before, After, AfterReturing, Around, Throws
+
+======================================
+
+
+
+
+

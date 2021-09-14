@@ -2,6 +2,8 @@ package com.adobe.prj.api;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +48,7 @@ public class ProductController {
 	// http://localhost:8080/api/products 
 	// payload contains new product data
 	@PostMapping()
-	public ResponseEntity<Product> addProduct(@RequestBody Product p) {
+	public ResponseEntity<Product> addProduct(@RequestBody @Valid Product p) {
 		Product prd = service.saveProduct(p);
 		return new  ResponseEntity<>(prd, HttpStatus.CREATED);  // 201
 	}
