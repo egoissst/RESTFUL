@@ -32,8 +32,4 @@ public class LogAspect {
 		logger.info("*********************");
 	}
 	
-	@AfterThrowing(value="execution(* com.adobe.prj.**.*.*(..))", throwing = "NotFoundException")
-	public void logException(JoinPoint jp, NotFoundException ex) {
-		
-	}
 }

@@ -32,7 +32,7 @@ public class Order {
 	private double total;
 	
 	@ManyToOne()
-	@JoinColumn(name="customer_email") // FK
+	@JoinColumn(name="customer_email") // FK column
 	private Customer customer;
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

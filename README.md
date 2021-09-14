@@ -867,4 +867,148 @@ Spring boot starter test includes:
 	==> json-path ==> to validated JSON data
 	==> Mockito ==> Mock API
 
+Don't create complete Spring container 
+@WebMvcTest(ProductController.class) ==> loads only ProductController on Spring container
+
+* create a mock OrderService
+@MockBean
+private OrderService service;
+
+* 	use MockMVC to trigger REST calls [ GET/ POSt / ..]
+==> uses SpringDispatcherServletTest not DispatcherServlet
+
+@Autowired
+private MockMvc mockMvc;
+
+
+=======
+class Order {
+@ManyToOne()
+	@JoinColumn(name="customer_email") // FK column
+	private Customer customer;
+	
+
+
+
+@Entity
+@Table(name="customers")
+public class Customer {
+
+	@Id
+	private String email;
+
+
+create table orders ( .., customer_email references customers(email))
+
+======
+
+
+public interface CustomerDao extends JpaRepository<Customer, String>{
+
+}
+
+public interface OrderDao extends JpaRepository<Order, Integer> {
+
+}
+
+"Will not create ItemDao"
+
+Order has 4 items;
+With ItemDao
+
+orderDao.save(order);
+itemDao.save(i1);
+itemDao.save(i2);
+itemDao.save(i3);
+itemDao.save(i4);
+
+
+Delete:
+
+orderDao.delete(order);
+itemDao.delete(i1);
+itemDao.delete(i2);
+itemDao.delete(i3);
+itemDao.delete(i4);
+
+Without ItemDao and with Cascade:
+
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name="order_fk") // FK
+	private List<Item> items = new ArrayList<>();
+
+
+
+Order has 4 items;
+orderDao.save(order); // takes care of saving items also
+
+orderDao.delete(order); // takes care of deleting items also
+
+===============================
+
+OneToMAny Default Fetch operation is LAZY, ManyToOne default is EAGER
+
+orderDao.findById(1);
+
+select * from orders where id = 1;
+
+==
+fetch = FetchType.EAGER
+
+orderDao.findById(1);
+
+select * from orders o inner join items i where o.oid = i.order_fk
+
+order json:
+
+{
+	"customer":  {
+		"email": "sam@adobe.com"
+	},
+	"items" : [
+			{"qty": 3, "product": {"id":5}},
+		 	{"qty": 1, "product": {"id":1}}
+	]	
+}
+
+=====
+
+@Transactional is an Around type of Advice [ AOP ]
+
+if method on which this is placed doesn't throw exception it invokes "commit" else "rollback"
+
+=========
+
+Optimistic locking:
+
+
+@Table(name = "products")
+@Entity
+public class Product  {
+
+@Version
+private int version;
+
+products
+
+id | name | quantity | version
+22   x       100          0
+
+user 1:
+changes done
+update products set quantity = 95, version = version + 1 where id = 22 and version = 0
+
+user 2:
+update products set quantity = 98, version = version + 1 where id = 22 and version = 0
+
+ 
+Let's assume user 2 commits first
+
+
+id | name | quantity | version
+22   x       98          1
+
+User 1 trys to commit
+
+=============================
 
