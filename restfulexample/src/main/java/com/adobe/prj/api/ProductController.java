@@ -6,7 +6,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +21,9 @@ import com.adobe.prj.entity.Product;
 import com.adobe.prj.service.NotFoundException;
 import com.adobe.prj.service.OrderService;
 
+import io.swagger.annotations.ApiOperation;
+
+
 @RestController
 @RequestMapping("api/products")
 public class ProductController {
@@ -31,6 +33,7 @@ public class ProductController {
 	// based on accept http header convert List<Product> to JSON / XML /...
 	// http://localhost:8080/api/products
 	// http://localhost:8080/api/products?low=1000&high=50000
+	@ApiOperation(value = "returns all products or based on price range")
 	@GetMapping()
 	public @ResponseBody List<Product> getProducts(@RequestParam(name ="low", defaultValue = "0.0") double low, 
 			@RequestParam(name ="high", defaultValue = "0.0") double high) {
@@ -48,6 +51,11 @@ public class ProductController {
 		return service.getProduct(id);
 	}
 	
+	@GetMapping("/cache/{pid}")
+	public  ResponseEntity<Product>  getProductCache(@PathVariable("pid") int id) throws NotFoundException {
+		Product p = service.getProduct(id);
+		return ResponseEntity.ok().eTag(Long.toString(p.hashCode())).body(p);
+	}
 	
 	// http://localhost:8080/api/products 
 	// payload contains new product data

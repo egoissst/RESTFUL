@@ -1203,6 +1203,49 @@ ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String
 ===============================
 
 REST Documentation
+* RESTful API Modeling Language is a YAML-based language for describing RESTful APIs.
+
+YaML files
+
+spring.datasource.
+	url=jdbc:mysql://localhost:3306/ADOBE_JPA?createDatabaseIfNotExist=true
+	driverClassName=com.mysql.cj.jdbc.Driver
+
+================================
+
+* OpenAPI Specification
+=> Swagger
+
+======================
+http://localhost:8080/swagger-ui.html
+http://localhost:8080/v2/api-docs
+
+==> @ApiOperation
+==> @ApiModel
+
+=================
+RESTful web services can be layered
+
+* Caching
+==> Client side caching
+1) using HTTP headers ==> Cache-Control, Expires, ETag
+
+ETag ==> Entity Tag ==> when ResponseEntity is sent along with it send ETag [ can be hashCode / version]
+=> First flow server sends response and ETag
+==> subsequent requests Client has to send ETag along with the request
+Accept: application/json
+If-Not-Match: "etagvalue"
+
+GET http://localhost:8080/api/products/cache/1
+
+Headers we get 
+Etag: "-2019683972"
+
+==> server hits the DB pulls the data generates ETag and matched with header from client ==> SC 302 or new data
+
+
+==> Server side caching
+==> Middle tier caching
 
 
 

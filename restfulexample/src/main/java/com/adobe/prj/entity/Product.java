@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
@@ -34,6 +35,7 @@ public class Product implements Serializable {
 	@Min(value = 0, message="Quantity ${validatedValue} should be more than {value}")
 	private int quantity;
 	
+	 
 	public Product() {
 	}
 	

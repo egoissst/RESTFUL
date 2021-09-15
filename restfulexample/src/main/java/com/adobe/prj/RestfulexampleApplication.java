@@ -12,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 import com.adobe.prj.entity.Product;
 import com.adobe.prj.service.OrderService;
@@ -23,6 +24,11 @@ public class RestfulexampleApplication implements CommandLineRunner {
 	
 	@Autowired
 	private RestTemplate template;
+	
+	@Bean
+	public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {
+		return new ShallowEtagHeaderFilter();
+	}
 	
 	@Bean
 	public RestTemplate getRestTemplate(RestTemplateBuilder builder) {
