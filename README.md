@@ -1245,7 +1245,102 @@ Etag: "-2019683972"
 
 
 ==> Server side caching
+	==> JPA ==> First level [enabled by default ] and Second level caching
+	@Transactional
+	public Product getProduct(int id) {
+		Product p = productDao.findById(1); // hits the DB
+		...
+		 Product p2 = productDao.findById(1); // points to cached product ==> no hit to DB
+	}
+	* Second level caching JBOSSSwarm Cache / EHCache
+	ehcache.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"
+monitoring="autodetect" dynamicConfig="true">
+
+<defaultCache eternal="false" timeToLiveSeconds="30"
+memoryStoreEvictionPolicy="LRU" statistics="true" maxElementsInMemory="10000"
+overflowToDisk="false" />
+
+<cache name="book" maxEntriesLocalHeap="10000" eternal="false"
+timeToIdleSeconds="60" timeToLiveSeconds="60" memoryStoreEvictionPolicy="LRU"
+statistics="true">
+</cache>
+
+</ehcache>
+==> Avoid hiting DB
+
 ==> Middle tier caching
+* ConcurrentHashMap is configured to be used as CacheManager
+* Redis
+
+Steps: 
+1) install redis on docker
+2) Add dependecnies
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+3) Enable Caching
+@EnableCaching
+by default uses ConcurrentMapCacheManager
+this object will get created if no other CacheManagers are available @Conditional(..)
+
+spring.cache.redis.time-to-live=30000
+
+Serialization ==> data to stream
+Add Custom Config "RedisCustomConfig.java"
+
+* @Cacheable
+@Cacheable(value="productCache")
+@Cacheable(value="productCache", key="#id")
+* condition is based on parameter values
+
+@Cacheable(value="productCache", key="#p.id", condition="#p.price>50000")
+@PostMapping()
+	public ResponseEntity<Product> addProduct(@RequestBody @Valid Product p) {
+		Product prd = service.saveProduct(p);
+		return new  ResponseEntity<>(prd, HttpStatus.CREATED);  // 201
+	}
+
+* result is returned object
+* unless is condition on return value
+@Cacheable(value="productCache", key="#result.id", unless='#result==null')
+public @ResponseBody  Product  getProduct(@PathVariable("pid") int id) throws NotFoundException {
+		return service.getProduct(id);
+}
+
+* @CacheEvict
+
+@CacheEvict(value="productCache", key="#id")
+public void removeProduct(int id) {
+
+}
+
+
+@CacheEvict(value="productCache", allEntries=true)
+@RequestMapping("/api/products/clear")
+public void clearCache() {
+
+}
+* @CachePut
+to update the cache entry
+@CachePut(value="productCache", key="#id")
+public void updateProduct(int id, double price) {
+	...
+}
+
+
+npx redis-commander
+=======================
+
 
 
 

@@ -7,10 +7,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
@@ -18,12 +22,27 @@ import com.adobe.prj.entity.Product;
 import com.adobe.prj.service.OrderService;
 
 @SpringBootApplication
+@EnableScheduling
 public class RestfulexampleApplication implements CommandLineRunner {
 	@Autowired
 	private OrderService service;
 	
 	@Autowired
 	private RestTemplate template;
+	
+	@Autowired
+	private CacheManager cacheManager;
+	
+	@Scheduled(fixedRate = 1000)
+//	@Scheduled(fixedDelay =  1000)
+//	@Scheduled(cron = "0 0/30 * * * *" )
+//	@CacheEvict(value="productCache", allEntries = true)
+	public void clearProductCache() {
+		System.out.println("cleared!!!");
+		cacheManager.getCacheNames().forEach(name -> {
+			cacheManager.getCache(name).clear();
+		});
+	}
 	
 	@Bean
 	public ShallowEtagHeaderFilter shallowEtagHeaderFilter() {

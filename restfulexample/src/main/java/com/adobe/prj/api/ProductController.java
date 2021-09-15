@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,14 @@ public class ProductController {
 	}
 	
 	// http://localhost:8080/api/products/5
+	@Cacheable(value="productCache", key="#id")
 	@GetMapping("/{pid}")
 	public @ResponseBody  Product  getProduct(@PathVariable("pid") int id) throws NotFoundException {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return service.getProduct(id);
 	}
 	
