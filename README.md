@@ -1012,3 +1012,199 @@ User 1 trys to commit
 
 =============================
 
+<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+docker run -d -p 6379:6379 --name my-redis redis
+
+
+NodeJS installed
+
+$ npm install -g redis-commander
+$ redis-commander
+
+============
+
+
+Day 4
+
+* Mapping associations
+* Cascade  and FETCH
+* @Transactional
+* Dirty checking
+* RESTController
+
+@Query("from Order o inner join Customer c")
+	List<Object[]> getReport();
+
+	Object[0] ==> Order
+	Object[1] ==> Customer
+
+@Query("select o.orderDate, o.total, c.firstName, c.email from Order o inner join Customer c")
+	List<Object[]> getReport();
+
+Object[0] ==> orderDate
+object[1] ==> total
+...
+
+@Query("select new com.adobe.prj.entity.ReportDTO(o.orderDate, o.total, c.firstName, c.email) from Order o inner join Customer c")
+List<ReportDTO> getReport();
+
+=================================
+1) Consume RESTapis in Java [ Spring Boot]
+2) can also be used for Integration Testing http://localhost:8080/api/products
+3) Useful in Microservices
+* RestTemplate
+* WebClient
+
+==================================
+
+RestTemplate:
+
+package com.adobe.prj;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import com.adobe.prj.entity.Product;
+import com.adobe.prj.service.OrderService;
+
+@SpringBootApplication
+public class RestfulexampleApplication implements CommandLineRunner {
+	@Autowired
+	private OrderService service;
+	
+	@Autowired
+	private RestTemplate template;
+	
+	@Bean
+	public RestTemplate getRestTemplate(RestTemplateBuilder builder) {
+			return builder.build();
+	}
+	
+	private void getAllProducts() {
+		String result = template.getForObject("http://localhost:8080/api/products", String.class);
+		System.out.println(result);
+		
+		System.out.println("************");
+		
+		ResponseEntity<List<Product>> response = template.exchange("http://localhost:8080/api/products", 
+				HttpMethod.GET, null, new ParameterizedTypeReference<List<Product>>() {
+		});
+		
+		List<Product> products = response.getBody();
+		for(Product p : products) {
+			System.out.println(p);
+		}
+	}
+		
+	private void getProduct() {
+		ResponseEntity<Product> response = template.getForEntity("http://localhost:8080/api/products/1", Product.class);
+		System.out.println(response.getBody().getName());
+	}
+	
+	private void addUsingRestTemplate() {
+		Product p = new Product(0,"Tata Sky", 4500.00, "tv");
+		ResponseEntity<Product> resp = template.postForEntity("http://localhost:8080/api/products/", p, Product.class);
+		System.out.println(resp.getStatusCodeValue());
+		System.out.println(resp.getBody().getId());
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(RestfulexampleApplication.class, args);
+	}
+	
+	/*
+	 * this method gets called once spring container is created
+	 */
+	@Override
+	public void run(String... args) throws Exception {
+//		addProduct();
+//		getProducts();
+		System.out.println("***** Adding *****");
+		addUsingRestTemplate();
+		System.out.println("*** GET ALL **********");
+		getAllProducts();
+		System.out.println("***** Get By ID *******");
+		getProduct();
+	}
+
+	private void getProducts() {
+		List<Product> products = service.getProducts();
+		for(Product p : products) {
+			System.out.println(p);
+		}
+	}
+
+	private void addProduct() {
+		Product p = new Product(0, "iPhone 12", 120000.00, "mobile");
+		p.setQuantity(100);
+		service.saveProduct(p);
+	}
+
+}
+
+===
+
+
+// create headers
+HttpHeaders headers = new HttpHeaders();
+// set `content-type` header
+headers.setContentType(MediaType.APPLICATION_JSON);
+// set `accept` header
+headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+ 
+
+// build the request
+HttpEntity<Map<Product, Object>> entity = new HttpEntity<>(product, headers);
+
+// send POST request
+ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+
+
+
+===============================
+
+REST Documentation
+
+
+
+
+
