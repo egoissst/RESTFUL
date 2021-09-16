@@ -1639,9 +1639,19 @@ https://projectreactor.io/
 https://rxmarbles.com/
 
 ==================
+run this command where docker-compose.yml file exists:
+docker-compose up
+
+Mongodb supports reactive database ==> Tailable
 
 
+MongoDB will automatically close a cursor when the client has exhausted all results in the cursor. However, for capped collections you may use a Tailable Cursor that remains open after the client exhausts the results in the initial cursor.
 
+========================
+
+ProtoBuf and Security
+
+=============================
 
 
 
