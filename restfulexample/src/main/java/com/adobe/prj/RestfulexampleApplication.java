@@ -94,7 +94,7 @@ public class RestfulexampleApplication implements CommandLineRunner {
 //		addProduct();
 //		getProducts();
 		System.out.println("***** Adding *****");
-		addUsingRestTemplate();
+//		addUsingRestTemplate();
 		System.out.println("*** GET ALL **********");
 		getAllProducts();
 		System.out.println("***** Get By ID *******");

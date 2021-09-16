@@ -1,0 +1,4 @@
+docker run -d --name=prometheus -p 9090:9090 -v C:\prometheus\prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus --config.file=/etc/prometheus/prometheus.yml
+
+
+docker cp C:\prometheus\rules.yml prometheus:/etc/prometheus/rules.yml

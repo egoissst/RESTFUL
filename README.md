@@ -1458,3 +1458,19 @@ PROTOBUF
 
 Security
 
+http_server_requests_seconds_count{uri="/api/products"}
+rate(http_server_requests_seconds_count{uri="/api/products"}[5m]) > 0
+
+
+=================================================================================
+
+Day 5
+
+------
+
+Day 4 Recap:
+* JPQL joins
+* using Cache CacheManager ==> ConcurrentMapCacheManager, RedisCacheManager
+* EntityGraph to solve EAGER and FETCH issues of loading associations
+
+ 
