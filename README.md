@@ -1473,4 +1473,48 @@ Day 4 Recap:
 * using Cache CacheManager ==> ConcurrentMapCacheManager, RedisCacheManager
 * EntityGraph to solve EAGER and FETCH issues of loading associations
 
- 
+-----------------------------------------
+
+Metrics: Health, CPU usage, Threads Usage, HTTP Requests, ...
+
+actuator library of spring boot provides micrometer to generate metrics 
+
+Time-series database server to store these metrics and generate report [ Prometheus / Graphafa / Netflix Atlas/]
+
+Prometheus scrape data 
+
+actutator + Prometheus
+
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+
+==
+
+application.properties
+management.endpoints.web.exposure.include=*
+
+management.metrics.distribution.percentiles-histogram.http.server.requests=true
+
+===
+
+start.txt
+prometheus.yml
+rules.yml
+
+docker run -d --name=prometheus -p 9090:9090 -v C:\prometheus\prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus --config.file=/etc/prometheus/prometheus.yml
+
+
+docker cp C:\prometheus\rules.yml prometheus:/etc/prometheus/rules.yml
+
+
+
+ab -c 100 -n 1000 http://localhost:8080/api/products
+
