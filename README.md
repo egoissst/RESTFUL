@@ -1528,6 +1528,68 @@ Custom metrics :check Micrometer @Timed annotation
 
 ===========================================================================
 
+HATEOAS ==> Hypermedia As The Extension Of Application State ==> Level 3  RESTful Web services
+
+Level 2 ==> URI ==> Nouns and HTTP methods as Verbs [ GET / POST / PUT / DELETE]
+
+WebMvcLinkBuilder used to create Links in representation
+
+
+Entity ==> Model ==> Domain class
+
+HATEOAS ==> RepresentionModel
+
+{
+	id:1
+	description:"Red Velvet",
+	status: ..,
+	_links : {
+		"payment" : "http://localhost:8080/orders/1/pay",
+		"cancel": "http://localhost:8080/orders/1/cancel"
+
+	}
+}
+
+===
+Payment
+http://localhost:8080/orders/1/pay
+
+===
+
+http://localhost:8080/orders
+
+[{"id":1,"orderStatus":"BEING_CREATED","description":"Red Velvet"},{"id":2,"orderStatus":"BEING_CREATED","description":"Mocha"}]
+
+
+http://localhost:8080/orders/1
+
+{"id":1,"orderStatus":"BEING_CREATED","description":"Red Velvet",
+	"_links":
+		{
+		"payment":[{"href":"http://localhost:8080/orders/1/pay"},{"href":"http://localhost:8080/orders/1/pay"}],
+		"cancel":[{"href":"http://localhost:8080/orders/1/cancel"},{"href":"http://localhost:8080/orders/1/cancel"}]
+	}
+}
+
+
+POSTMAN:
+POST : http://localhost:8080/orders/1/pay
+
+Response:
+{
+    "id": 1,
+    "orderStatus": "PAID_FOR",
+    "description": "Red Velvet"
+}
+
+===
+GET
+http://localhost:8080/orders/1
+
+{"id":1,"orderStatus":"PAID_FOR","description":"Red Velvet",
+"_links":
+	{"fulfill":[{"href":"http://localhost:8080/orders/1/fulfill"},{"href":"http://localhost:8080/orders/1/fulfill"}]}}
+
 
 
 
