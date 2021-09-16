@@ -1518,3 +1518,16 @@ docker cp C:\prometheus\rules.yml prometheus:/etc/prometheus/rules.yml
 
 ab -c 100 -n 1000 http://localhost:8080/api/products
 
+http_server_requests_seconds_count{uri="/api/products"}
+rate(http_server_requests_seconds_count{uri="/api/products"}[5m]) > 0
+
+
+===============
+
+Custom metrics :check Micrometer @Timed annotation 
+
+===========================================================================
+
+
+
+
