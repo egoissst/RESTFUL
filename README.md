@@ -1590,6 +1590,59 @@ http://localhost:8080/orders/1
 "_links":
 	{"fulfill":[{"href":"http://localhost:8080/orders/1/fulfill"},{"href":"http://localhost:8080/orders/1/fulfill"}]}}
 
+======================
+ 
+
+
+Spring Data REST is part of the umbrella Spring Data project and makes it easy to build hypermedia-driven REST web services on top of Spring Data repositories [ spring-data-jpa, mongorepository] .
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-rest</artifactId>
+</dependency>
+
+===========================
+
+@EnableAsync ==> setup using Asynchronous operation using thread pool
+
+Executor pool = ExecutorService.newFixedThreadPool(100);
+
+=============================================
+
+Spring boot
+* web
+==> Tomcat embedded container
+==> Threads
+
+* webflux ==> Reactive programming
+==> netty Reactor as Web server
+==> Event loop
+
+=========
+
+Spring boot webflux provides "Mono" and "Flux" types of data
+
+"Mono" is single data
+"FLux" is a collection
+
+=========
+
+reactivespring.zip
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+https://projectreactor.io/
+
+================
+https://rxmarbles.com/
+
+==================
+
+
+
+
 
 
 
