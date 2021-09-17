@@ -1654,5 +1654,188 @@ ProtoBuf and Security
 =============================
 
 
+Day 5 Recap:
+* HATEOAS ==> HyperMedia ==> Representation + links [WebMvcLinkBuilder] ==> Level 3 RESTful Web Services
+* Spring Data Rest ==> built on Spring data repositories [ Endpoints + HATEAOS + Repository]
+ Based on Associations it generates the links
+ @RepositoryRestResource(..)
+ interface SampleInterface extends JpaRepository {
+
+ }
+
+* Async 
+* @EnableAsyc ==> to use Thread Pool other than thread pool created by Servlet engine/container
+
+Aggregator type of application [ MakeMyTrip / Swiggy ] ==> Use Different threads to make a call to Service provider [JetAirways/ Indigo / SpiceJet] ==> Future / CompletableFuture
+
+every call in service mehod should have @Async("poolname")
+
+--
+
+Reactive style of programming with Spring boot
+==> Push based using Publisher / Subscriber and Subscription model
+* webflux instead of web dependecies
+* Netty as servlet engine instead of Tomcat
+* Netty uses event loop with NonBlocking IO operations; tomcat is thread based
+Tomcat with Blocking IO ==> client makes a call to Netflix to get a movie "Avengers"==> complete file is served
+Real time applicaitons ==> streaming api ==> Netty ==> chunk by chunk is sent to client
+
+* Reactive Mongo Repository ==> Push data from database ==> Tailable cursor 
+@Tailable
+public List<Records> getRecords();
+
+* RJDBC 
+
+===================
+
+Day 6
+
+Security
+
+This dependecy makes all resources as "protected"
+generates one users with
+username: user
+password: generated_password
+
+<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+setting username and password in "application.properties"
+spring.security.user.name=banu
+spring.security.user.password=test123
+
+=================
 
 
+
+
+Filter ==> Servlet API
+
+Servlet API
+* Servlet ==> DispatcherServlet ==> FrontController
+* JSP 
+* Listeners ==> Based on Events some code has to execute
+* Filter ==> Interceptor design pattern
+
+
+==========
+
+JDBC Authentication:
+jdbcauth.zip
+
+=======================
+methodauth.zip 
+
+Method Level Authorization
+
+======================
+
+JWT: JSON Web Token
+JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
+
+RESTful ==> STATELESS
+
+
+1) Server generates token ans sends to client:
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+
+2) client has to store this token in its own mechanism
+
+Subsequent requests from client:
+Http Headers
+
+AUTHORIZATION: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+Server needs to validate this token
+
+=====================================================================
+https://jwt.io/
+
+Headers:
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+
+type of token and algoritm used to generate token
+
+PAYLOAD: contains claims
+==> subject ==> who?
+==> iat ==> issued at time
+==> exp ==> expire
+==> iss ==> issuer
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+
+VERIFY SIGNATURE:
+
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  topsecretkey
+)
+
+====================
+
+jwtExample.zip
+
+=============================
+
+JwtConfig.java reads configuration from "application.properties" file
+secret, expires and headers
+
+SecurityConfig.java ==> uses BCrypPasswordEncorder, JWTConfig, SecretKey, Custom UserServiceImpl
+
+
+User logins in "JwtUsernameAndPasswordAuthenticationFilter" ==> attemptAuthentication() ==> successfulAuthentication()
+
+Server sends 
+AuTOHORIZATION Header with value as:
+BEARER eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJSaXRhIiwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6InN0dWRlbnQ6d3JpdGUifSx7ImF1dGhvcml0eSI6InN0dWRlbnQ6cmVhZCJ9LHsiYXV0aG9yaXR5IjoiY291cnNlOnJlYWQifSx7ImF1dGhvcml0eSI6IlJPTEVfQURNSU4ifSx7ImF1dGhvcml0eSI6ImNvdXJzZTp3cml0ZSJ9XSwiaWF0IjoxNjMxODYxOTAyLCJleHAiOjE2MzI2ODEwMDB9.Y1cLq_szRuVTjQhNySr7qwh5OTkxpPS1Z8T3TKvh3L9rbJUi7dq9bwOprvQFEwbLuw3sEp4N4XtUcQS_JOIiPA
+
+==
+Client makes request using Token
+
+Request Headers:
+Authorization: Bearere tokenvalue....
+
+SecurityConfig.java we have configures Token Verifier:
+        .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig),JwtUsernameAndPasswordAuthenticationFilter.class)
+      
+
+JwtTokenVerifier.java doFilterInternal() method is called to validate token
+
+===============================
+
+ProtoBuf
+
+What are protocol buffers? ==> based on C++ types
+
+.proto
+
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+}
+
+Account-serviceProtoBuf
+Customer-serviceProtoBuf
+
+If not for Decclarative client by Feign
+@FeignClient
+
+we should have used RestTemplate
+
+
+
+
+
+	
